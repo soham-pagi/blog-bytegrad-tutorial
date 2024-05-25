@@ -1,10 +1,20 @@
+import prisma from "@/lib/db";
+import { notFound } from "next/navigation";
+
 type PostIdProps = {
   params: { id: string };
 };
 
-export default async function PostPage({ params: { id } }: PostIdProps) {
-  const response = await fetch(`https://dummyjson.com/posts/${id}`);
-  const post = await response.json();
+export default async function PostPage({ params }: PostIdProps) {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: parseInt(params.id),
+    },
+  });
+
+  if (!post) {
+    notFound();
+  }
 
   return (
     <main className="px-7 pt-24 text-center">
